@@ -21,10 +21,12 @@ my %parameters=();
 $parameters{"wave_amplitude"}=2.0; # [mm] the maximum amplitude of the wavyness
 $parameters{"wave_length"}=20.0; # [mm] the half wave length in xy direction of the waves
 $parameters{"wave_in"}=0.4; # [mm] the z-position where it starts getting wavy, should be somewhere above the first layer
-$parameters{"wave_out"}=30.0; # [mm] the z-position where it stops beeing wavy
+$parameters{"wave_out"}=60.0; # [mm] the z-position where it stops beeing wavy
 $parameters{"wave_ramp"}=10.0; # [mm] the length of the transition between not wavy at all and maximum wavyness
 $parameters{"wave_max_segment_length"}=1.0; # [mm] max. length of the wave segments, smaller values give a better approximation
 $parameters{"wave_digits"}=4; # [1] accuracy of output g-code
+$parameters{"bed_center_x"}=0; # [mm] x-position of bed center / where Slic3r centers the objects
+$parameters{"bed_center_y"}=0; # [mm] y-position of bed center / where Slic3r centers the objects
 
 # gcode inputBuffer
 my @inputBuffer=();
@@ -107,7 +109,7 @@ sub calculate_z_displacement
 {
 	my $x = $_[0], my $y = $_[1], my $z = $_[2];
 	my $ramps = calculate_ramps($z);
-	my $zOffset = 0.0 - $parameters{"wave_amplitude"}/2.0 + $parameters{"wave_amplitude"}/4.0*sin($x*2*PI/$parameters{"wave_length"}) + $parameters{"wave_amplitude"}/4.0*sin($y*2*PI/$parameters{"wave_length"});
+	my $zOffset = 0.0 - $parameters{"wave_amplitude"}/2.0 + $parameters{"wave_amplitude"}/4.0*sin(($x-$parameters{"bed_center_x"})*2*PI/$parameters{"wave_length"}) + $parameters{"wave_amplitude"}/4.0*sin(($y-$parameters{"bed_center_y"})*2*PI/$parameters{"wave_length"});
 	$zOffset *= $ramps;
 	return $zOffset;
 }
@@ -335,13 +337,21 @@ sub filter_print_gcode
 sub filter_parameters
 {
 	# collecting parameters from G-code comments
-	if($_[0] =~ /^\h*;\h*([\w_-]*)\h*=\h*(\d*\.?\d+)\h*/){
+	if($_[0] =~ /^\h*;\h*([\w_-]*)\h*=\h*(\d*\.?\d+)\h*$/){
 		# all numeric variables are saved as such
 		my $key=$1;
 		my $value = $2*1.0;
 		unless($value==0 && exists $parameters{$key}){
 			$parameters{$key}=$value;
 		}
+	}elsif($_[0] =~ /^\h*;\h*bed_shape\h*=\h*((\d*)x(\d*))\h*,\h*((\d*)x(\d*))\h*,\h*((\d*)x(\d*))\h*,\h*((\d*)x(\d*))\h*/){
+		# all other variables (alphanumeric, arrays, etc) are saved as strings
+		my $w=$8;
+		my $h=$9;
+		$parameters{"bed_width"}=$w*1.0;# if defined $w;
+		$parameters{"bed_depth"}=$h*1.0;# if defined $h;
+		$parameters{"bed_center_x"}=$w/2.0;# if defined $w;
+		$parameters{"bed_center_y"}=$h/2.0;# if defined $h;
 	}elsif($_[0] =~ /^\h*;\h*([\h\w_-]*)\h*=\h*(.*)\h*/){
 		# all other variables (alphanumeric, arrays, etc) are saved as strings
 		my $key=$1;
