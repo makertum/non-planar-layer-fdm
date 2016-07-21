@@ -1,6 +1,12 @@
 # Slic3r Post-Processing Script For Non-Planar Layer FDM (Perl)
 Warps boring, planar G-Code from Slic3r (or any other slicer) into wavy shapes.
 
+## Examples
+
+![Strati 1](https://raw.githubusercontent.com/makertum/non-planar-layer-fdm/master/images/strati_1.png)
+![Strati 2](https://raw.githubusercontent.com/makertum/non-planar-layer-fdm/master/images/strati_2.png)
+![Displacement](https://raw.githubusercontent.com/makertum/non-planar-layer-fdm/master/images/displacement.png)
+
 ## Features
 - wavyness-ramps, -in and -out points
 - extrusion compensation
