@@ -19,7 +19,7 @@ Warps boring, planar G-Code from Slic3r (or any other slicer) into wavy shapes.
   `; wave_digits = 4` [1] accuracy of output g-code
 
 ## How to use
-- Have Perl installed and path variables set (Windows users: Strawberry perl, Linux OSX: you already have it)
+- Have Perl installed and path variables set (Windows users: Strawberry Perl, Linux and OSX: you already have it)
 - Add `; start of print` to the beginning of your G-code (ideally at the end of your start g-code)
 - Add `; end of print` to the end of your G-code (ideally at the beginning of your end g-code)
 - Set `Slic3r -> Preferences -> Mode` to `Expert`
