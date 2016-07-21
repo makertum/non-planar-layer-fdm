@@ -1,12 +1,6 @@
 # Slic3r Post-Processing Script For Non-Planar Layer FDM (Perl)
 Warps boring, planar G-Code from Slic3r (or any other slicer) into wavy shapes.
 
-## Examples
-
-![Strati 1](https://github.com/makertum/non-planar-layer-fdm/raw/master/images/strati_1.png)
-![Strati 2](https://github.com/makertum/non-planar-layer-fdm/raw/master/images/strati_2.png)
-![Displacement](https://github.com/makertum/non-planar-layer-fdm/raw/master/images/displacement.png)
-
 ## Features
 - wavyness-ramps, -in and -out points
 - extrusion compensation
@@ -33,6 +27,12 @@ Warps boring, planar G-Code from Slic3r (or any other slicer) into wavy shapes.
 - Make sure `Slic3r -> Printer Settings -> General -> Advanced -> Use relative E distances` is checked
 - Optional: Check `Slic3r -> Print Settings -> Output options -> Output file -> Verbose G-code`
 - Slice (& Warp)!
+
+## Examples
+
+![Strati 1](https://github.com/makertum/non-planar-layer-fdm/raw/master/images/strati_1.png)
+![Strati 2](https://github.com/makertum/non-planar-layer-fdm/raw/master/images/strati_2.png)
+![Displacement](https://github.com/makertum/non-planar-layer-fdm/raw/master/images/displacement.png)
 
 ## FAQ
 
