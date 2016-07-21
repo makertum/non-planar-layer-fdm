@@ -1,5 +1,5 @@
 # Slic3r Post-Processing Script For Non-Planar Layer FDM (Perl)
-Warps boring, planar G-Code from Slic3r (or any other slicer) into wavy shapes.
+Warps boring, planar G-code from Slic3r (or any other slicer) into wavy shapes.
 
 ## Features
 - wavyness-ramps, -in and -out points
@@ -16,12 +16,12 @@ Warps boring, planar G-Code from Slic3r (or any other slicer) into wavy shapes.
   `; wave_out = 30.0`[mm] the z-position where it stops beeing wavy
   `; wave_ramp = 10.0` [mm] the length of the transition between not wavy at all and maximum wavyness
   `; wave_max_segment_length = 1.0` # [mm] max. length of the wave segments, smaller values give a better approximation
-  `; wave_digits = 4` [1] accuracy of output g-code
+  `; wave_digits = 4` [1] accuracy of output G-code
 
 ## How to use
 - Have Perl installed and path variables set (Windows users: Strawberry Perl, Linux and OSX: you already have it)
-- Add `; start of print` to the beginning of your G-code (ideally at the end of your start g-code)
-- Add `; end of print` to the end of your G-code (ideally at the beginning of your end g-code)
+- Add `; start of print` to the beginning of your G-code (ideally at the end of your start G-code)
+- Add `; end of print` to the end of your G-code (ideally at the beginning of your end G-code)
 - Set `Slic3r -> Preferences -> Mode` to `Expert`
 - Add absolute path to the script in `Slic3r -> Print Settings -> Output options -> Post-processing scripts` (no /~ allowed)
 - Make sure `Slic3r -> Printer Settings -> General -> Advanced -> Use relative E distances` is checked
