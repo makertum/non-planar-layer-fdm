@@ -3,9 +3,9 @@ Warps boring, planar G-Code from Slic3r (or any other slicer) into wavy shapes.
 
 ## Examples
 
-![Strati 1](https://raw.githubusercontent.com/makertum/non-planar-layer-fdm/master/images/strati_1.png)
-![Strati 2](https://raw.githubusercontent.com/makertum/non-planar-layer-fdm/master/images/strati_2.png)
-![Displacement](https://raw.githubusercontent.com/makertum/non-planar-layer-fdm/master/images/displacement.png)
+![Strati 1](https://github.com/makertum/non-planar-layer-fdm/raw/master/images/strati_1.png)
+![Strati 2](https://github.com/makertum/non-planar-layer-fdm/raw/master/images/strati_2.png)
+![Displacement](https://github.com/makertum/non-planar-layer-fdm/raw/master/images/displacement.png)
 
 ## Features
 - wavyness-ramps, -in and -out points
