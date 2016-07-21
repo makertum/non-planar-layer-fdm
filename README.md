@@ -29,7 +29,7 @@ Warps boring, planar G-Code from Slic3r (or any other slicer) into wavy shapes.
 - Slice (& Warp)!
 
 ## Examples
-
+Here's a 3D model of the Strati by Local Motors, sliced and treated with the script. The wavyness is limited to the bottom *frame-part* using the `wave_in` and `wave_out` parameters, while the rest of the chassis is untouched.
 ![Strati 1](https://github.com/makertum/non-planar-layer-fdm/raw/master/images/strati_1.png)
 ![Strati 2](https://github.com/makertum/non-planar-layer-fdm/raw/master/images/strati_2.png)
 ![Displacement](https://github.com/makertum/non-planar-layer-fdm/raw/master/images/displacement.png)
