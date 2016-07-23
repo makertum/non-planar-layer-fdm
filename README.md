@@ -19,7 +19,7 @@ Warps boring, planar G-code from Slic3r (or any other slicer) into wavy shapes.
   `; wave_ramp = 10.0` [mm] the length of the transition between not wavy at all and maximum wavyness
   `; wave_max_segment_length = 1.0` # [mm] max. length of the wave segments, smaller values give a better approximation
   `; wave_digits = 4` [1] accuracy of output G-code
-  `; wave_function = wave` [1] wave function, can be "wave", "wing" or any Perl expression (may make use of $x or $bed_center_x, or any other user defined parameter)
+  `; wave_function = wave` [1] wave function, can be "wave", "wing" or any Perl expression (may make use of `$x` or `$parameters{"bed_center_x"}`, or any other user defined parameter)
 
 ## How to use
 - Have Perl installed and path variables set (Windows users: Strawberry Perl, Linux and OSX: you already have it)
