@@ -5,7 +5,7 @@ Warps boring, planar G-code from Slic3r (or any other slicer) into wavy shapes.
 - wavyness-ramps, -in and -out points
 - extrusion compensation
 - configurable displacement
-- custom wave function through Perl expression
+- custom displacement function through Perl expression
 
 ## Printing parameters and default values
 - set via `; some_parameter = 2` in start or end G-code (or anywhere else)
@@ -23,12 +23,15 @@ Warps boring, planar G-code from Slic3r (or any other slicer) into wavy shapes.
 
 ## How to use
 - Have Perl installed and path variables set (Windows users: Strawberry Perl, Linux and OSX: you already have it)
+- Set `Slic3r -> Preferences -> Mode` to `Expert`
 - Add `; start of print` to the beginning of your G-code (ideally at the end of your start G-code)
 - Add `; end of print` to the end of your G-code (ideally at the beginning of your end G-code)
-- Set `Slic3r -> Preferences -> Mode` to `Expert`
 - Add absolute path to the script in `Slic3r -> Print Settings -> Output options -> Post-processing scripts` (no /~ allowed)
 - Make sure `Slic3r -> Printer Settings -> General -> Advanced -> Use relative E distances` is checked
+- Make sure to _UNCHECK_ `Slic3r -> Print Settings -> Layers and perimeters -> Vertical shells -> Spiral vase`. 
+- Make sure all XYZ moves between `; start of print` and `; end of print` are in absolute mode
 - Optional: Check `Slic3r -> Print Settings -> Output options -> Output file -> Verbose G-code`
+- Make sure the script file is executable by `chmod 755 non-planar-layer-fdm.pl`
 - Slice (& Warp)!
 
 ## Examples
@@ -50,18 +53,16 @@ Here's a 3D model of the Strati by Local Motors, sliced and treated with the scr
 - Yes, totally. If you want straight parts afterwards you need to pre-warp them.
 - I'm currently experimenting with ImplicitCAD for pre-warped parts.
 
-### There is a @#! in your code. You should die.
-- I know those canons. It's the Perl. What was the question?
-
 ### Why u no use CPAN modules, i.e. Gcode::Interpreter
-- Not because they suck, really, they're just not made for this kind of experiments
+- Not because they suck, really, they're just not made for this kind of experiments.
 
 ## Troubleshooting
 
 ### Why doesn't it work
-- You're running Windows 8.1 and might be experiencing a Slic3r bug
-- You might have missed to check `Slic3r -> Printer Settings -> General -> Advanced -> Use relative E distances`
-- You're using the vase-mode in Slic3r, which is currently incompatible with the script.
+- Are you running Windows 8.1 and might be experiencing a Slic3r bug?
+- Are you using the `Slic3r -> Print Settings -> Layers and perimeters -> Vertical shells -> Spiral vase`? This option is currently incompatible with the script.
+- Did you check `Slic3r -> Printer Settings -> General -> Advanced -> Use relative E distances`?
+- Did you make sure the script file is executable by `chmod 755 non-planar-layer-fdm.pl`?
 
 ## Disclaimer / License
 This is a work in progress. Any suggestions are heavily welcome. All scripts in this repository are licensed under the GNU Affero General Public License, version 3. Created by Moritz Walter 2016.
