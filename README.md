@@ -28,7 +28,7 @@ Warps boring, planar G-code from Slic3r (or any other slicer) into wavy shapes.
 - Add `; end of print` to the end of your G-code (ideally at the beginning of your end G-code)
 - Add absolute path to the script in `Slic3r -> Print Settings -> Output options -> Post-processing scripts` (no /~ allowed)
 - Make sure `Slic3r -> Printer Settings -> General -> Advanced -> Use relative E distances` is checked
-- Make sure to _UNCHECK_ `Slic3r -> Print Settings -> Layers and perimeters -> Vertical shells -> Spiral vase`. 
+- Make sure to **UNCHECK** `Slic3r -> Print Settings -> Layers and perimeters -> Vertical shells -> Spiral vase`. 
 - Make sure all XYZ moves between `; start of print` and `; end of print` are in absolute mode
 - Optional: Check `Slic3r -> Print Settings -> Output options -> Output file -> Verbose G-code`
 - Make sure the script file is executable by `chmod 755 non-planar-layer-fdm.pl`
