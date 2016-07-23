@@ -5,6 +5,7 @@ Warps boring, planar G-code from Slic3r (or any other slicer) into wavy shapes.
 - wavyness-ramps, -in and -out points
 - extrusion compensation
 - configurable displacement
+- custom wave function through Perl expression
 
 ## Printing parameters and default values
 - set via `; some_parameter = 2` in start or end G-code (or anywhere else)
@@ -12,11 +13,13 @@ Warps boring, planar G-code from Slic3r (or any other slicer) into wavy shapes.
 - script parameters:
   `; wave_amplitude = 2.0` [mm] the maximum amplitude of the wavyness
   `; wave_length = 20.0` [mm] the wave length in xy direction of the waves
+  `; wave_length_2 = 200.0` [mm] an additional wave length parameter, currently only used for testing the wing function
   `; wave_in = 0.4` [mm] the z-position where it starts getting wavy, should be somewhere above the first layer
   `; wave_out = 30.0`[mm] the z-position where it stops beeing wavy
   `; wave_ramp = 10.0` [mm] the length of the transition between not wavy at all and maximum wavyness
   `; wave_max_segment_length = 1.0` # [mm] max. length of the wave segments, smaller values give a better approximation
   `; wave_digits = 4` [1] accuracy of output G-code
+  `; wave_function = wave` [1] wave function, can be "wave", "wing" or any Perl expression (may make use of $x or $bed_center_x, or any other user defined parameter)
 
 ## How to use
 - Have Perl installed and path variables set (Windows users: Strawberry Perl, Linux and OSX: you already have it)

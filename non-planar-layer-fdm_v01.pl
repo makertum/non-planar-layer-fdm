@@ -20,13 +20,15 @@ my %parameters=();
 # default wave parameters
 $parameters{"wave_amplitude"}=2.0; # [mm] the maximum amplitude of the wavyness
 $parameters{"wave_length"}=20.0; # [mm] the half wave length in xy direction of the waves
+$parameters{"wave_length_2"}=200.0; # [mm] the half wave length in xy direction of the waves
 $parameters{"wave_in"}=0.4; # [mm] the z-position where it starts getting wavy, should be somewhere above the first layer
-$parameters{"wave_out"}=60.0; # [mm] the z-position where it stops beeing wavy
-$parameters{"wave_ramp"}=10.0; # [mm] the length of the transition between not wavy at all and maximum wavyness
+$parameters{"wave_out"}=30.0; # [mm] the z-position where it stops beeing wavy
+$parameters{"wave_ramp"}=10; # [mm] the length of the transition between not wavy at all and maximum wavyness
 $parameters{"wave_max_segment_length"}=1.0; # [mm] max. length of the wave segments, smaller values give a better approximation
 $parameters{"wave_digits"}=4; # [1] accuracy of output g-code
 $parameters{"bed_center_x"}=0; # [mm] x-position of bed center / where Slic3r centers the objects
 $parameters{"bed_center_y"}=0; # [mm] y-position of bed center / where Slic3r centers the objects
+$parameters{"wave_function"}="wave"; # can be "wave", "wing" or any Perl function that returns a numeric value.
 
 # gcode inputBuffer
 my @inputBuffer=();
@@ -94,7 +96,7 @@ sub digitize
 	return (round($num*$factor))/$factor;
 }
 
-# calculating the wave displacement
+# calculating the transition factor as a function of the current z-coordinate, returns a value between 0.0 and 1.0, depending on how much displacement shall be applied in calculate_z_displacement.
 sub calculate_ramps{
 	my $z=$_[0];
 
@@ -109,12 +111,28 @@ sub calculate_z_displacement
 {
 	my $x = $_[0], my $y = $_[1], my $z = $_[2];
 	my $ramps = calculate_ramps($z);
-	my $zOffset = 0.0 - $parameters{"wave_amplitude"}/2.0 + $parameters{"wave_amplitude"}/4.0*sin(($x-$parameters{"bed_center_x"})*2*PI/$parameters{"wave_length"}) + $parameters{"wave_amplitude"}/4.0*sin(($y-$parameters{"bed_center_y"})*2*PI/$parameters{"wave_length"});
+
+	my $zOffset=0.0;
+
+	# I added two preconfigured displacement functions ("wave" and "wing") along with a freely configurable one (using eval -_-). This is a little messy.
+	if((exists $parameters{"wave_function"}) && ($parameters{"wave_function"} eq "wave")){
+		#print("; wave found\n");
+		$zOffset = 0.0 - $parameters{"wave_amplitude"}/2.0 + $parameters{"wave_amplitude"}/4.0*sin(($x-$parameters{"bed_center_x"})*2*PI/$parameters{"wave_length"}) + $parameters{"wave_amplitude"}/4.0*sin(($y-$parameters{"bed_center_y"})*2*PI/$parameters{"wave_length"});
+	}elsif((exists $parameters{"wave_function"}) && ($parameters{"wave_function"} eq "wing")){
+		#if(($x-$parameters{"bed_center_x"})>-$parameters{"wave_length"}/2 && ($x-$parameters{"bed_center_x"})<$parameters{"wave_length"}/2){
+			$zOffset = -$parameters{"wave_amplitude"}/2.0 + ( $parameters{"wave_amplitude"} * sin( ( ($x-$parameters{"bed_center_x"})*sqrt(PI)/$parameters{"wave_length"}-sqrt(PI)/2.0 )**2 ) ) * ( 1.0 + 0.5*cos(($y-$parameters{"bed_center_y"}-$parameters{"wave_length_2"}/4.0)*2*PI/$parameters{"wave_length_2"}) );
+		#}
+	}elsif(exists $parameters{"wave_function"}){
+		$zOffset = eval($parameters{"wave_function"});
+	}else{
+		#print("; nothing found\n");
+	}
+
 	$zOffset *= $ramps;
 	return $zOffset;
 }
 
-# approximating the extrusion multiplier to compensate for the ramps
+# approximating the extrusion multiplier to compensate for the transitions from zero displacement to full displacement (or other layer-height-differentials, depending on how you calculate_z_displacement)
 sub calculate_extrusion_multiplier
 {
 	my $x=$_[0], my $y=$_[1], my $z=$_[2];
@@ -125,12 +143,12 @@ sub calculate_extrusion_multiplier
 	return 1.0+($this-$last)/$parameters{"layer_height"};
 }
 
-# segmenting a g-code move and displacing it
-sub segment_move
+# chopping a g-code move into smaller segments and displacing these
+sub displace_move
 {
 	my $thisLine= $_[0], my $X = $_[1],	my $Y = $_[2],	my $Z = $_[3],	my $E = $_[4],	my $F = $_[5], my $verbose = $_[6];
 
-	# we don't need to do this below the in-point
+	# we don't need to displace anything below the in-point and above the out-point
 	if($gcodeZ>=$parameters{"wave_in"} && $gcodeZ<=$parameters{"wave_out"}){
 
 		# getting a complete set of coordinates
@@ -143,30 +161,38 @@ sub segment_move
 		# calculating the distance of the move
 		my $distance=dist2($lastGcodeX, $lastGcodeY, $x, $y);
 
-		# determining how many segments we need to stay below maxLineLength
+		# determining how many segments we need to stay below $parameters{"wave_max_segment_length"}
+		# cannot be below 1, since at least 1 segment is required for a move to happen
 		my $segments=max(ceil($distance/$parameters{"wave_max_segment_length"}), 1);
 
-		my $gcode = " ; segmented move start ($segments segments)\n";
-		#$gcode .= " ; ".$thisLine;
+		# the chunk of gcode we're about to generate
+		my $gcode = " ; displaced move start ($segments segments)\n";
 
+		# interating over the segments and generating the new gcode
 		for (my $k=0; $k<$segments; $k++) {
+			# calculating the end point of this segment (including z, without displacment)
 			my $segmentX=$lastGcodeX+($k+1)*($x-$lastGcodeX)/$segments;
 			my $segmentY=$lastGcodeY+($k+1)*($y-$lastGcodeY)/$segments;
-			my $segmentF=$lastGcodeF+($k+1)*($f-$lastGcodeF)/$segments;
-			my $segmentE=$gcodeE/$segments; # only relative extrusion
 			my $segmentZ=$lastGcodeZ+($k+1)*($z-$lastGcodeZ)/$segments;
+			# calculating the feedrate at the end of this segment (this value isn't used, useful for other gcode flavors)
+			#my $segmentF=$lastGcodeF+($k+1)*($f-$lastGcodeF)/$segments;
+			# calculating how much to extrude in this segment
+			my $segmentE=$gcodeE/$segments; # only relative extrusion
+			# applying the extrusion multiplier based on the undisplaced z-position of this segment
 			$segmentE*=calculate_extrusion_multiplier($segmentX,$segmentY,$segmentZ);
+			# displacing the z-position of this segment
 			$segmentZ+=calculate_z_displacement($segmentX,$segmentY,$segmentZ);
 
+			# generating the gcode. adresses that have not been specified are omitted (except for Z)
 			$gcode .= "G1";
 			$gcode .= " X".digitize($segmentX, $parameters{"wave_digits"}) if defined $X;
 			$gcode .= " Y".digitize($segmentY, $parameters{"wave_digits"}) if defined $Y;
 			$gcode .= " Z".digitize($segmentZ, $parameters{"wave_digits"});
 			$gcode .= " E".digitize($segmentE, $parameters{"wave_digits"}) if defined $E;
-			$gcode .= " F".round($segmentF) if defined $F;
+			$gcode .= " F".$F if defined $F;
 			$gcode .= " ; segment $k\n";
 		}
-		$gcode .= " ; segmented move end\n";
+		$gcode .= " ; displaced move end\n";
 		return $gcode;
 	}else{
 		return $thisLine;
@@ -214,7 +240,7 @@ sub process_layer_change
 {
 	my $thisLine=$_[0],	my $Z=$_[1], my $verbose=$_[2];
 	# add code here or just return $thisLine;
-	return segment_move($thisLine, my $X, my $Y, $Z, my $E, my $F, $verbose);
+	return displace_move($thisLine, my $X, my $Y, $Z, my $E, my $F, $verbose);
 }
 
 sub process_retraction_move
@@ -228,14 +254,14 @@ sub process_printing_move
 {
 	my $thisLine=$_[0], my $X = $_[1], my $Y = $_[2], my $Z = $_[3], my $E = $_[4], my $F = $_[5], my $verbose=$_[6];
 	# add code here or just return $thisLine;
-	return segment_move($thisLine, $X, $Y, $Z, $E, $F, $verbose);
+	return displace_move($thisLine, $X, $Y, $Z, $E, $F, $verbose);
 }
 
 sub process_travel_move
 {
 	my $thisLine=$_[0], my $X=$_[1], my $Y=$_[2], my $Z=$_[3], my $F=$_[4], my $verbose=$_[5];
 	# add code here or just return $thisLine;
-	return segment_move($thisLine, $X, $Y, $Z, my $E, $F, $verbose);
+	return displace_move($thisLine, $X, $Y, $Z, my $E, $F, $verbose);
 }
 
 sub process_absolute_extrusion
@@ -267,7 +293,7 @@ sub process_other
 sub filter_print_gcode
 {
 	my $thisLine=$_[0];
-	if($thisLine=~/^\h*;(.*)\h*/){
+	if($thisLine=~/^\h*;(.*?)\h*/){
 		# ;: lines that only contain comments
 		my $C=$1; # the comment
 		return process_comment($thisLine,$C);
@@ -326,7 +352,7 @@ sub filter_print_gcode
 		$end=1;
 	}else{
 		my $verbose;
-		if($thisLine=~/.*(\h*;\h*([\h\w_-]*)\h*)?/){
+		if($thisLine=~/.*(\h*;\h*([\h\w_-]*?)\h*)?/){
 			$verbose=$2;
 		}
 		# all the other gcodes, such as temperature changes, fan on/off, acceleration
@@ -344,6 +370,7 @@ sub filter_parameters
 		unless($value==0 && exists $parameters{$key}){
 			$parameters{$key}=$value;
 		}
+		#print("; $key is numeric\n");
 	}elsif($_[0] =~ /^\h*;\h*bed_shape\h*=\h*((\d*)x(\d*))\h*,\h*((\d*)x(\d*))\h*,\h*((\d*)x(\d*))\h*,\h*((\d*)x(\d*))\h*/){
 		# all other variables (alphanumeric, arrays, etc) are saved as strings
 		my $w=$8;
@@ -352,11 +379,13 @@ sub filter_parameters
 		$parameters{"bed_depth"}=$h*1.0;# if defined $h;
 		$parameters{"bed_center_x"}=$w/2.0;# if defined $w;
 		$parameters{"bed_center_y"}=$h/2.0;# if defined $h;
-	}elsif($_[0] =~ /^\h*;\h*([\h\w_-]*)\h*=\h*(.*)\h*/){
+		#print("; bed_shape is bed\n");
+	}elsif($_[0] =~ /^\h*;\h*([\h\w_-]*?)\h*=\h*(.*)\h*/){
 		# all other variables (alphanumeric, arrays, etc) are saved as strings
 		my $key=$1;
 		my $value = $2;
 		$parameters{$key}=$value;
+	  #print("; $key is alphanumeric\n");
 	}
 }
 
@@ -368,12 +397,12 @@ sub print_parameters
 	print "; OS: $^O\n\n";
 	print "; Environment Variables:\n";
 	foreach (sort keys %ENV) {
-		print "; $_  =  $ENV{$_}\n";
+		print "; *$_*  =  *$ENV{$_}*\n";
 	}
 	print "\n";
 	print "; Slic3r Script Variables:\n";
 	foreach (sort keys %parameters) {
-		print "; $_  =  $parameters{$_}\n";
+		print "; *$_*  =  *$parameters{$_}*\n";
 	}
 	print "\n";
 }
