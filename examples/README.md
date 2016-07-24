@@ -16,6 +16,7 @@ Example files for the Slic3r post-processing script for non-planar layer FDM.
     - Cube3
     - Wing
 - Add absolute path to the script (`path/to/non-planar-layer-fdm.pl`) to the imported *Printing* settings (Cube1-4 and Wing).
+- Make sure the imported *Printer* settings work for you.
 - Slice the example files with the corresponding settings (see below).
 - Check the results in your favorite G-code visualizer (Repetier Host is recommended).
 
