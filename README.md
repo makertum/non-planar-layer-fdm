@@ -38,19 +38,31 @@ Warps boring, planar G-code from Slic3r (or any other slicer) into wavy shapes. 
 - Slice (& Warp)!
 
 ## Examples
-The example folder contains additional examples with instructions. Here's a 3D model of the Strati by Local Motors, sliced and treated with the script. The wavyness is limited to the bottom *frame-part* using the `wave_in` and `wave_out` parameters, while the rest of the chassis is untouched.
-![Strati 1](https://github.com/makertum/non-planar-layer-fdm/raw/master/images/strati_1.png)
-![Strati 2](https://github.com/makertum/non-planar-layer-fdm/raw/master/images/strati_2.png)
-![Displacement](https://github.com/makertum/non-planar-layer-fdm/raw/master/images/displacement.png)
+The example folder contains additional examples with instructions. Here are a few impressions:
+
+### Curved surfaces
+![wavy cube](https://hackadaycom.files.wordpress.com/2016/07/non-planar-layer-fdm__mg_0427.jpg?w=400)
+### Structured surfaces
+![structured cube](https://hackadaycom.files.wordpress.com/2016/07/non-planar-layer-fdm__mg_0423.jpg?w=400)
+### Gradually displaced cube
+![flat cube](https://hackadaycom.files.wordpress.com/2016/07/non-planar-layer-fdm__mg_0426.jpg?w=400)
+### Wing
+![wing](https://hackadaycom.files.wordpress.com/2016/07/non-planar-layer-fdm__mg_0453.jpg?w=400)
 
 ## FAQ
 
 ### Why?
-- The wave displacement transforms tensile forces (=weakness of FDM) between printed layers into shearing forces (=strength of FDM)
-- smooth, curved surfaces, i.e. for aerodynamic applications
-- aesthetics
-- artistic purposes
-- fun
+- Strength
+  - The wave displacement transforms tensile forces (=weakness of FDM) between printed layers into shearing forces (=strength of FDM)
+  - More uniform resistance of tensile stress due to varying layer orientation
+- Smooth, curved surfaces, i.e. for
+  - aerodynamic applications (i.e. models of aircrafts, cars)
+  - ergonomic or haptic elements (i.e. buttons, keypads)
+- Structured surfaces (see Examples)
+  - haptic elements
+- Design & aesthetics
+- Artistic purposes
+- Fun
 
 ### Doesn't this mess up my parts?
 - Yes, totally. If you want straight parts afterwards you need to pre-warp them.
