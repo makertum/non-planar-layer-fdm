@@ -48,6 +48,7 @@ The example folder contains additional examples with instructions. Here are a fe
 ![flat cube](https://hackadaycom.files.wordpress.com/2016/07/non-planar-layer-fdm__mg_0426.jpg?w=400)
 ### Wing
 ![wing](https://hackadaycom.files.wordpress.com/2016/07/non-planar-layer-fdm__mg_0453.jpg?w=400)
+![wing2](https://hackadaycom.files.wordpress.com/2016/07/non-planar-layer-fdm__mg_0449.jpg?w=400)
 
 ## FAQ
 
