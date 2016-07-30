@@ -42,10 +42,13 @@ The example folder contains additional examples with instructions. Here are a fe
 
 ### Curved surfaces
 ![wavy cube](https://hackadaycom.files.wordpress.com/2016/07/non-planar-layer-fdm__mg_0427.jpg?w=400)
+![wavy cube side](https://hackadaycom.files.wordpress.com/2016/07/non-planar-layer-fdm__mg_0440.jpg?w=400)
 ### Structured surfaces
 ![structured cube](https://hackadaycom.files.wordpress.com/2016/07/non-planar-layer-fdm__mg_0423.jpg?w=400)
+![structured cube side](https://hackadaycom.files.wordpress.com/2016/07/non-planar-layer-fdm__mg_0437.jpg?w=400)
 ### Gradually displaced cube
 ![flat cube](https://hackadaycom.files.wordpress.com/2016/07/non-planar-layer-fdm__mg_0426.jpg?w=400)
+![flat cube side](https://hackadaycom.files.wordpress.com/2016/07/non-planar-layer-fdm__mg_0439.jpg?w=400)
 ### Wing
 ![wing](https://hackadaycom.files.wordpress.com/2016/07/non-planar-layer-fdm__mg_0453.jpg?w=400)
 ![wing2](https://hackadaycom.files.wordpress.com/2016/07/non-planar-layer-fdm__mg_0449.jpg?w=400)
