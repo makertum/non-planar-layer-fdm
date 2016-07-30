@@ -23,7 +23,8 @@ Warps boring, planar G-code from Slic3r (or any other slicer) into wavy shapes. 
   - `; wave_function = wave` [String/Perl] wave function, can be "wave", "wing", or any Perl expression (i.e. `abs($x-$paramters{"bed_center_x"})`), which may make use of `$x` or `$parameters{"bed_center_x"}` as well as any other user defined parameter
 
 ## How to use
-- Have Perl installed and path variables set (Windows users: Strawberry Perl, Linux and OSX: you already have it)
+- Have Perl installed and path variables set (Windows users: Strawberry Perl, Linux and OSX: you already have Perl)
+- Make sure the `Math:Round` module is installed (Linux and OSX `cpan Math::Round` / Windows either `Start Menu -> All Apps -> Strawberry Perl -> CPAN Client` or `ppm install Math:Round`). If you happen to use Active Perl, you'll probably need a Business License for this module.
 - Set `Slic3r -> Preferences -> Mode` to `Expert`
 - Add `; start of print` to the beginning of your G-code (ideally at the **end** of your start G-code)
 - Add `; end of print` to the end of your G-code (ideally at the **beginning** of your end G-code)
